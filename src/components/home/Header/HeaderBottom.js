@@ -4,40 +4,119 @@ import { HiOutlineMenuAlt4 } from "react-icons/hi";
 import { FaSearch, FaUser, FaCaretDown, FaShoppingCart } from "react-icons/fa";
 import Flex from "../../designLayouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { paginationItems } from "../../../constants";
-import { BsSuitHeartFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
   const [show, setShow] = useState(false);
   const [showUser, setShowUser] = useState(false);
+  const [filteredProduct, setFilteredProduct] = useState([]);
   const navigate = useNavigate();
-  const ref = useRef();
-  useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (ref.current.contains(e.target)) {
-        setShow(true);
-      } else {
-        setShow(false);
-      }
-    });
-  }, [show, ref]);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [showSearchBar, setShowSearchBar] = useState(false);
-
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
+  const logout = () => {
+    window.localStorage.removeItem("currentToken");
+    localStorage.removeItem("id_customer");
+    navigate("/");
+    window.location.reload();
   };
 
-  useEffect(() => {
-    const filtered = paginationItems.filter((item) =>
-      item.productName.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleLogout = (e) => {
+    e.preventDefault();
+    let token = localStorage.getItem("currentToken");
+    console.log(`Bearer ${token}`);
+    try {
+      const result = axios.post("https://matkinhcaolo.io.vn/api/logout", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (result.data.status === 200) {
+        localStorage.removeItem("currentToken");
+        localStorage.removeItem("id_customer");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  var AuthButtons = "";
+  if (!localStorage.getItem("currentToken")) {
+    AuthButtons = (
+      <div
+        class="order-2 md:order-3 flex flex-wrap items-center justify-end mr-0 md:mr-4"
+        id="nav-content"
+      >
+        <div class="auth flex items-center w-full md:w-full">
+          <Link
+            class="border border-indigo-500 text-indigo-500 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:text-white hover:bg-indigo-300 focus:outline-none focus:shadow-outline"
+            to="/signin"
+          >
+            Đăng nhập
+          </Link>
+
+          <Link
+            class="bg-indigo-700 text-white p-2 rounded-md  hover:bg-indigo-500 hover:text-gray-100"
+            to="/signup"
+          >
+            Đăng ký
+          </Link>
+        </div>
+      </div>
     );
-    setFilteredProducts(filtered);
-  }, [searchQuery]);
+  } else {
+    AuthButtons = (
+      <div>
+        <button
+          onClick={logout}
+          class="bg-indigo-400 text-white p-2 pl-3 pr-3 rounded-md font-bold transition duration-500 ease-in-out hover:ring-2 ring-offset-2 ring-blue-600"
+        >
+          Đăng xuất
+        </button>
+      </div>
+    );
+  }
+  const ref = useRef();
+  // useEffect(() => {
+  //   document.body.addEventListener("click", (e) => {
+  //     if (ref.current.contains(e.target.value) === "") {
+  //       setShow(true);
+  //     } else {
+  //       setShow(false);
+  //     }
+  //   });
+  // }, [show, ref]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    const filtered = productDe.filter((item) =>
+      item.name_product.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredProduct(filtered);
+    return filtered;
+  };
+  const [productDe, setProduct] = useState([]);
+
+  // Function to fetch data using Axios
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(
+        "https://matkinhcaolo.io.vn/api/products/search"
+      );
+      console.log(response);
+      setProduct(response.data.results);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  // Call fetchData on component mount
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
+  // useEffect(() => {
+
+  // }, [searchQuery]);
 
   return (
     <div className="w-full bg-[#F5F5F3] relative">
@@ -46,7 +125,7 @@ const HeaderBottom = () => {
           <div
             onClick={() => setShow(!show)}
             ref={ref}
-            className="flex h-14 cursor-pointer items-center gap-2 text-primeColor"
+            className="flex h-14 cursor-pointer items-center gap-2 text-primeColor invisible"
           >
             <HiOutlineMenuAlt4 className="w-5 h-5" />
             <p className="text-[14px] font-normal">Shop by Category</p>
@@ -58,25 +137,25 @@ const HeaderBottom = () => {
                 transition={{ duration: 0.5 }}
                 className="absolute top-36 z-50 bg-primeColor w-auto text-[#767676] h-auto p-4 pb-6"
               >
-                <Link to={"category/imprimante"}>
+                <Link to={"category/gongkinh"}>
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    Imprimante
+                    Gọng Kính
                   </li>
                 </Link>
 
-                <Link to={"category/ancre"}>
+                <Link to={"category/kinhmat"}>
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    ancre
+                    Kính Mát
                   </li>
                 </Link>
-                <Link to={"category/Ruban"}>
+                <Link to={"category/gongtron"}>
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    ruban
+                    Gọng tròn
                   </li>
                 </Link>
-                <Link to={"category/Bac"}>
+                <Link to={"category/gongmatmeo"}>
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    Bac de dechet
+                    Gọng mắt mèo
                   </li>
                 </Link>
               </motion.ul>
@@ -86,9 +165,12 @@ const HeaderBottom = () => {
             <input
               className="flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px]"
               type="text"
-              onChange={handleSearch}
+              onChange={
+                // {console.log(searchQuery)}
+                handleSearch
+              }
               value={searchQuery}
-              placeholder="Search your products here"
+              placeholder="Tìm kiếm sản phẩm"
             />
             <FaSearch className="w-5 h-5" />
             {searchQuery && (
@@ -96,11 +178,11 @@ const HeaderBottom = () => {
                 className={`w-full mx-auto h-96 bg-white top-16 absolute left-0 z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer`}
               >
                 {searchQuery &&
-                  filteredProducts.map((item) => (
+                  filteredProduct.map((item) => (
                     <div
                       onClick={() =>
                         navigate(
-                          `/product/${item.productName
+                          `/product/${item.id_product}
                             .toLowerCase()
                             .split(" ")
                             .join("")}`,
@@ -113,23 +195,27 @@ const HeaderBottom = () => {
                         setShowSearchBar(true) &
                         setSearchQuery("")
                       }
-                      key={item._id}
+                      key={item.id_product}
                       className="max-w-[600px] h-28 bg-gray-100 mb-3 flex items-center gap-3"
                     >
-                      <img className="w-24" src={item.img} alt="productImg" />
+                      <img
+                        className="w-24"
+                        src={item.avt_product}
+                        alt="ProductImage"
+                      />
                       <div className="flex flex-col gap-1">
                         <p className="font-semibold text-lg">
-                          {item.productName}
+                          {item.name_product}
                         </p>
                         <p className="text-xs">
-                          {item.des.length > 100
-                            ? `${item.des.slice(0, 100)}...`
-                            : item.des}
+                          {item.desc_product.length > 100
+                            ? `${item.desc_product.slice(0, 100)}...`
+                            : item.desc_product}
                         </p>
                         <p className="text-sm">
                           Price:{" "}
                           <span className="text-primeColor font-semibold">
-                            ${item.price}
+                            ${item.price_product}
                           </span>
                         </p>
                       </div>
@@ -138,12 +224,13 @@ const HeaderBottom = () => {
               </div>
             )}
           </div>
+
           <div className="flex gap-4 mt-2 lg:mt-0 items-center pr-6 cursor-pointer relative">
-            <div onClick={() => setShowUser(!showUser)} className="flex">
+            {/* <div onClick={() => setShowUser(!showUser)} className="flex">
               <FaUser />
               <FaCaretDown />
-            </div>
-            {showUser && (
+            </div> */}
+            {/* {showUser && (
               <motion.ul
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -160,14 +247,9 @@ const HeaderBottom = () => {
                     Sign Up
                   </li>
                 </Link>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Profile
-                </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Others
-                </li>
               </motion.ul>
-            )}
+            )} */}
+            <div>{AuthButtons}</div>
             <Link to="/cart">
               <div className="relative">
                 <FaShoppingCart />
@@ -176,7 +258,6 @@ const HeaderBottom = () => {
                 </span>
               </div>
             </Link>
-            <BsSuitHeartFill />
           </div>
         </Flex>
       </div>

@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import {
   bannerImgOne,
-  bannerImgTwo,
   bannerImgThree,
+  bannerImgTwo
 } from "../../assets/images";
 import Image from "../designLayouts/Image";
 
@@ -152,27 +152,27 @@ const Banner = () => {
   const slides = [
     {
       imgSrc: bannerImgOne,
-      text: "Enhance Your Printing Experience",
+      text: "Mắt kính hiện đại",
       Subtext:
-        "Explore our premium printers and consumables for exceptional results",
-      buttonLink: "/offer",
-      buttonText: "Shop Now",
-    },
-    {
-      imgSrc: bannerImgOne,
-      text: "Quality Printing Solutions",
-      Subtext:
-        "Discover our wide range of printers and consumables designed for professional printing needs.",
+        "Mắt kính hiện đại",
       buttonLink: "/shop",
-      buttonText: "About-us",
+      buttonText: "Mua ngay",
     },
     {
-      imgSrc: bannerImgOne,
-      text: "Efficiency Redefined",
+      imgSrc:bannerImgTwo,
+      text: "Mẫu đa dạng",
       Subtext:
-        "Maximize productivity with our advanced printers and high-quality consumables. ",
+        "Giá cạnh tranh",
+      buttonLink: "/about",
+      buttonText: "Về chúng tôi",
+    },
+    {
+      imgSrc: bannerImgThree,
+      text: "Chất lượng",
+      Subtext:
+        "Uy tính hàng đầu ",
       buttonLink: "/contact",
-      buttonText: "Contact-us",
+      buttonText: "Liên hệ",
     },
 
     // Add more slides as needed

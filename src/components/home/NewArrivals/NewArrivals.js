@@ -1,24 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import Heading from "../Products/Heading";
-import Product from "../Products/Product";
-import {
-  newArrOne,
-  newArrTwo,
-  newArrThree,
-  newArrFour,
-} from "../../../assets/images/index";
 import SampleNextArrow from "./SampleNextArrow";
 import SamplePrevArrow from "./SamplePrevArrow";
-
-const NewArrivals = () => {
+import { Link } from "react-router-dom";
+import axios from "axios";
+//carousel
+const NewArrivals = ({ props }) => {
   const settings = {
     infinite: true,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3500,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
+    easing: "linear",
     responsive: [
       {
         breakpoint: 1025,
@@ -46,65 +44,75 @@ const NewArrivals = () => {
       },
     ],
   };
+  const [productShop, setProduct] = useState([]);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "https://matkinhcaolo.io.vn/api/products"
+      );
+      console.log(response);
+      setProduct(response.data.results);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
-    <div className="w-full pb-16">
-      <Heading heading="New Arrivals" />
+    <div id="new_Arrivals" className="w-full pb-20">
+      <Heading heading="Sản phẩm mới" />
       <Slider {...settings}>
-        <div className="px-2">
-          <Product
-            _id="100001"
-            img={newArrOne}
-            productName="Round Table Clock"
-            price="44.00"
-            color="Black"
-            badge={true}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
-          />
-        </div>
-        <div className="px-2">
-          <Product
-            _id="100002"
-            img={newArrTwo}
-            productName="Smart Watch"
-            price="250.00"
-            color="Black"
-            badge={true}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
-          />
-        </div>
-        <div className="px-2">
-          <Product
-            _id="100003"
-            img={newArrThree}
-            productName="cloth Basket"
-            price="80.00"
-            color="Mixed"
-            badge={true}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
-          />
-        </div>
-        <div className="px-2">
-          <Product
-            _id="100004"
-            img={newArrFour}
-            productName="Funny toys for babies"
-            price="60.00"
-            color="Mixed"
-            badge={false}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
-          />
-        </div>
-        <div className="px-2">
-          <Product
-            _id="100005"
-            img={newArrTwo}
-            productName="Funny toys for babies"
-            price="60.00"
-            color="Mixed"
-            badge={false}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
-          />
-        </div>
+        {productShop.map((item, index) => (
+          <div
+            key={index}
+            className="hover:scale-105 transition-all duration-300 px-4 my-2"
+          >
+            <Link to={`/product/${item.id_product}`}>
+              <img
+                className="px-4 w-full border border-b-0 rounded-t-lg "
+                src={item.avt_product}
+                alt="productImage"
+              />
+            </Link>
+            <div className="product-item bg-light mb-4 border rounded-b-lg border-t-0 px-4">
+              <div className="max-w-80 py-6 flex flex-col gap-1  px-4">
+                <div className="flex items-center justify-between font-titleFont">
+                  <h2 className="text-lg text-primeColor font-bold">
+                    {item.name_product}
+                  </h2>
+                  <div> 
+                    {item.price_product === item.sellprice_product //nếu giá gốc = giá sell 
+                     ? (
+                      <>
+                        <p className="text-[#767676] text-[16px]">
+                          {item.sellprice_product}VND 
+                          {/* thì hiện 1 giá */}
+                        </p>
+                        <p class=" invisible text-[14px]"> hidden</p>
+                      </>
+                    ) : (
+                      <div>
+                        <p className="text-[#767676] text-[16px]">
+                          {item.sellprice_product}VND
+                          {/* //ngược lại thì hiện giá sell hoặc giá gốc */}
+                        </p>
+                        <p class=" text-gray-500 line-through dark:text-gray-500 text-[14px]">
+                          {item.price_product} VND
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[#767676] text-[14px]">
+                    {item.category.name_category}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </Slider>
     </div>
   );

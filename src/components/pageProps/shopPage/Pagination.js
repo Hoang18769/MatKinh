@@ -1,62 +1,94 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import Product from "../../home/Products/Product";
 import { useSelector } from "react-redux";
-import { paginationItems } from "../../../constants";
+import axios from "axios";
 
-const items = paginationItems;
 
 function Items({ currentItems, selectedBrands, selectedCategories }) {
   // Filter items based on selected brands and categories
-  const filteredItems = currentItems.filter((item) => {
-    const isBrandSelected =
-      selectedBrands.length === 0 ||
-      selectedBrands.some((brand) => brand.title === item.brand);
+  const [productDe, setProduct] = useState([]);
 
+  // Function to fetch data using Axios
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(
+        "https://matkinhcaolo.io.vn/api/product"
+      );
+      console.log(response);
+      setProduct(response.data.results);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  // Call fetchData on component mount
+  // useEffect(() => {
+  //   fetchProduct();
+  // }, []);
+ 
+  const filteredItems = currentItems.filter((item) => {
     const isCategorySelected =
       selectedCategories.length === 0 ||
-      selectedCategories.some((category) => category.title === item.cat);
+      selectedCategories.some((category) => category.name_category === item.category.name_category);
+      console.log("isCategorySelected",isCategorySelected)
+    return  isCategorySelected;
 
-    return isBrandSelected && isCategorySelected;
-  });
+});
 
   return (
     <>
       {filteredItems.map((item) => (
-        <div key={item._id} className="w-full">
+        <div key={item.id_product} className="flex w-full">
           <Product
-            _id={item._id}
-            img={item.img}
-            productName={item.productName}
-            price={item.price}
-            color={item.color}
-            badge={item.badge}
-            des={item.des}
-            pdf={item.pdf}
-            ficheTech={item.ficheTech}
-          />
-        </div>
-      ))}
+            // item={item}
+            id_product={item.id_product}
+            avt_product={item.avt_product}
+            name_product={item.name_product}
+            sellprice_product={item.sellprice_product}
+            price_product={item.price_product}
+            name_category={item.category.name_category}
+            />
+        </div>      
+      ))
+     }
+      {/* <Product           
+            /> */}
+            {
+
+             
+             }
     </>
   );
 }
-
 const Pagination = ({ itemsPerPage }) => {
   const [itemOffset, setItemOffset] = useState(0);
   const [itemStart, setItemStart] = useState(1);
+  const [productShop, setProduct] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "https://matkinhcaolo.io.vn/api/product"
+      );
+      console.log(response);
+      setProduct(response.data.results);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const endOffset = itemOffset + itemsPerPage;
-  const currentItems = items.slice(itemOffset, endOffset);
-  const selectedBrands = useSelector(
-    (state) => state.orebiReducer.checkedBrands
-  );
+  const currentItems = productShop.slice(itemOffset, endOffset);
   const selectedCategories = useSelector(
     (state) => state.orebiReducer.checkedCategorys
   );
-  const pageCount = Math.ceil(items.length / itemsPerPage);
+  const pageCount = Math.ceil(productShop.length / itemsPerPage);
 
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % items.length;
+    const newOffset = (event.selected * itemsPerPage) % productShop.length;
     const newStart = newOffset + 1; // Adjust the start index
 
     setItemOffset(newOffset);
@@ -68,7 +100,7 @@ const Pagination = ({ itemsPerPage }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mdl:gap-4 lg:gap-10">
         <Items
           currentItems={currentItems}
-          selectedBrands={selectedBrands}
+          // selectedBrands={selectedBrands}
           selectedCategories={selectedCategories}
         />{" "}
       </div>
@@ -87,10 +119,10 @@ const Pagination = ({ itemsPerPage }) => {
         />
 
         <p className="text-base font-normal text-lightText">
-          Products from {itemStart} to {Math.min(endOffset, items.length)} of{" "}
-          {items.length}
+          Products from {itemStart} to {Math.min(endOffset, productShop.length)} of{" "}
+          {productShop.length}
         </p>
-        <button onClick={() => console.log(selectedBrands)}> test</button>
+        {/* <button onClick={() => console.log(selectedBrands)}> </button> */}
       </div>
     </div>
   );

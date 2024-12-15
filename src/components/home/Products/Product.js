@@ -1,109 +1,102 @@
-import React, { useState } from "react";
-import { BsSuitHeartFill } from "react-icons/bs";
-import { GiReturnArrow } from "react-icons/gi";
+import React, { useEffect, useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
-import { MdOutlineLabelImportant } from "react-icons/md";
-import Image from "../../designLayouts/Image";
-import Badge from "./Badge";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../redux/orebiSlice";
+import Badge from "./Badge";
+import axios from "axios";
 import { toast } from "react-toastify";
+import { BsSuitHeartFill } from "react-icons/bs";
+import { Input } from "@material-tailwind/react";
 
-const Product = (props) => {
+const Product = (item) => {
   const dispatch = useDispatch();
-  const _id = props.productName;
-  const idString = (_id) => {
-    return String(_id).toLowerCase().split(" ").join("");
+  const [productShop, setProduct] = useState([]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setmaxPrice] = useState(800000);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "https://matkinhcaolo.io.vn/api/product"
+      );
+      console.log(response);
+      setProduct(response.data.results);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
-  const rootId = idString(_id);
-  const [wishList, setWishList] = useState([]);
-  const navigate = useNavigate();
-  const productItem = props;
-  const handleProductDetails = () => {
-    navigate(`/product/${rootId}`, {
-      state: {
-        item: productItem,
-      },
-    });
-  };
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
-  const handleWishList = () => {
-    toast.success("Product add to wish List");
-    setWishList(wishList.push(props));
-    console.log(wishList);
+  const handlePrice = (event) => {
+    const { value } = event.target;
+    setmaxPrice(value);
   };
+  //const filterProduct=productShop.filter((item)=>item.price_product>=minPrice &&item.price_product<=maxPrice)
   return (
-    <div className="w-full relative group">
-      <div className="max-w-80 max-h-80 relative overflow-y-hidden ">
-        <div onClick={handleProductDetails}>
-          <Image className="w-full h-full" imgSrc={props.img} />
-        </div>
-        <div className="absolute top-6 left-8">
-          {props.badge && <Badge text="New" />}
-        </div>
-        <div className="w-full h-32 absolute bg-white -bottom-[130px] group-hover:bottom-0 duration-700">
-          <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
-            <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full">
-              Compare
-              <span>
-                <GiReturnArrow />
-              </span>
-            </li>
-            <li
-              onClick={() =>
-                dispatch(
-                  addToCart({
-                    _id: props._id,
-                    name: props.productName,
-                    quantity: 1,
-                    image: props.img,
-                    badge: props.badge,
-                    price: props.price,
-                    colors: props.color,
-                  })
-                )
-              }
-              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
-            >
-              Add to Cart
-              <span>
-                <FaShoppingCart />
-              </span>
-            </li>
-            <li
-              onClick={handleProductDetails}
-              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
-            >
-              View Details
-              <span className="text-lg">
-                <MdOutlineLabelImportant />
-              </span>
-            </li>
-            <li
-              onClick={handleWishList}
-              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
-            >
-              Add to Wish List
-              <span>
-                <BsSuitHeartFill />
-              </span>
-            </li>
-          </ul>
-        </div>
+    <>
+      {/* <div className="cursor-pointer">
+      <div className="font-titleFont">
+        <ul className="flex flex-col gap-4 text-sm lg:text-base text-[#767676]">
+        <label for="customRange1" class="form-label">filter price:${minPrice}-${maxPrice}</label>
+        <input type="range"
+     class="range pr-6 accent-red-500" 
+      id="customRange1"
+      min="0"
+      max="800000"
+      value={maxPrice}
+      onChange={handlePrice}></input>
+   
+        </ul>
       </div>
-      <div className="max-w-80 py-6 flex flex-col gap-1 border-[1px] border-t-0 px-4">
-        <div className="flex items-center justify-between font-titleFont">
-          <h2 className="text-lg text-primeColor font-bold">
-            {props.productName}
-          </h2>
-          <p className="text-[#767676] text-[14px]">${props.price}</p>
+    </div> */}
+      {
+        <div className="hover:scale-105 transition-all duration-300   px-4 my-2">
+          <Link to={`/product/${item.id_product}`}>
+            <img
+              className="px-4 w-full border border-b-0 rounded-t-lg "
+              src={item.avt_product}
+              alt="product img"
+            />
+          </Link>
+          <div className="product-item bg-light mb-4">
+            <div className="product-img position-relative overflow-hidden"></div>
+            <div className="max-w-80 py-6 flex flex-col gap-1 border-[1px] border-t-0 rounded-b-lg px-4">
+              <div className="flex items-center justify-between font-titleFont">
+                <h2 className="text-lg text-primeColor font-bold">
+                  {item.name_product}
+                </h2>
+                <div>
+                  {item.price_product === item.sellprice_product ? (
+                    <>
+                      <p className="text-[#767676] text-[16px]">
+                        {item.sellprice_product}VND
+                      </p>
+                      <p class=" invisible text-[14px]"> hidden</p>
+                    </>
+                  ) : (
+                    <div>
+                      <p className="text-[#767676] text-[16px]">
+                        {item.sellprice_product}VND
+                      </p>
+                      <p class=" text-gray-500 line-through dark:text-gray-500 text-[14px]">
+                        {item.price_product} VND
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className="text-[#767676] text-[14px]">
+                  {item.name_category}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="text-[#767676] text-[14px]">{props.color}</p>
-        </div>
-      </div>
-    </div>
+      }
+    </>
   );
 };
 

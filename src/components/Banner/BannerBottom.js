@@ -6,8 +6,8 @@ const BannerBottom = () => {
   return (
     <div className="w-full bg-white border-b-[1px] py-4 border-b-gray-200 px-4">
       <div className="max-w-container mx-auto h-20 flex flex-col md:flex-row justify-between items-center">
-        <div className="flex items-center gap-2 w-72 shadow-sm hover:shadow-md duration-300">
-          <span className="font-bold font-titleFont w-6 text-center">
+        <div className="flex items-center gap-2 w-80 shadow-sm hover:shadow-md duration-300">
+          <span className=" font-bold font-titleFont w-6 text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 -117 679.99892 679"
@@ -38,7 +38,12 @@ const BannerBottom = () => {
               </g>
             </svg>
           </span>
-          <p className="text-lightText text-base">Two years warranty</p>
+          <div className="text-start mx-4  text-lightText text-xl">
+            Giao hàng nhanh <br />
+            <span className=" text-lightText text-base">
+            Giao hàng trong 2 ngày với đơn nội thành
+            </span>
+          </div>
         </div>
         <div className="flex md:w-auto items-center gap-2 w-72 shadow-sm hover:shadow-md duration-300">
           <span className="text-5xl text-center w-10 ml-1 text-orange-500">
@@ -53,9 +58,9 @@ const BannerBottom = () => {
             </svg>
           </span>
           <p className="text-xl text-lightText text-base">
-            Free shipping <br />{" "}
+          Miễn phí giao hàng  <br />{" "}
             <span className="text-xs text-lightText text-base">
-              Free Shipping World Wide
+            Miễn phí giao hàng với hóa đơn từ 500.000VND
             </span>
           </p>
         </div>
@@ -91,7 +96,12 @@ const BannerBottom = () => {
               ></path>
             </svg>
           </span>
-          <p className="text-lightText text-base">Return policy in 30 days</p>
+          <p className="text-xl text-lightText text-base">
+          Đổi trả trong 14 ngày  <br />{" "}
+            <span className="text-xs text-lightText text-base">
+            Đối với sản phẩm lỗi do nhà sản xuất
+            </span>
+          </p>
         </div>
       </div>
     </div>
